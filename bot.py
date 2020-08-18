@@ -6,7 +6,7 @@ import asyncio
 import wave
 import os
 
-TOKEN = 'NzA5Njk5NjkyOTEyNzA1NjQ2.XrptWA.cPuRMSE1lgAcPgdOZILTX_MdPDs'
+TOKEN = 'TOKEN'
 client = commands.Bot(command_prefix='-')
 player = None
 
