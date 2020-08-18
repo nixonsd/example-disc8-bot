@@ -25,6 +25,11 @@ async def skip(ctx):
 @client.event
 async def on_ready():
     global player
+
+    if not os.path.exists('music'):
+        os.mkdir('music')
+
+
     player = pl.Player()
 
 # P COMMAND
