@@ -25,7 +25,7 @@ class Timer:
 class Player:
     ### __init__(self)
     def __init__(self):
-        print("LOG Initialized..")
+        print("LOG..")
 
         for file in os.listdir("music"):
             if file.endswith(".wav"):
