@@ -6,11 +6,18 @@ import asyncio
 import wave
 import os
 
-TOKEN = 'TOKEN'
+TOKEN = 'NzA5Njk5NjkyOTEyNzA1NjQ2.XrptWA.ShYcyMLgU51q72LMKzm4kLaJl5k' # TOKEN
 client = commands.Bot(command_prefix='-')
 player = None
 
 ## COMMANDS
+
+# ON_READY EVENT - CHECKED
+@client.event
+async def on_ready():
+    global player
+    player = pl.Player()
+
 # SKIP COMMAND
 @client.command()
 async def skip(ctx):
@@ -18,45 +25,28 @@ async def skip(ctx):
         player.timer.cancel()
         await player.next()
     except:
-        print("ERROR: Cannot call 'skip' function.")
+        print("ERROR: Couldn't invoke skip function.")
         return
-
-# ON_READY EVENT
-@client.event
-async def on_ready():
-    global player
-
-    if not os.path.exists('music'):
-        os.mkdir('music')
-
-
-    player = pl.Player()
 
 # P COMMAND
 @client.command()
 async def p(ctx, url):
     try:
-        channel = ctx.author.voice.channel
-    except:
-        max = 0
-        for guild in client.guilds:
-            for channels in guild.channels:
-                if channels.type == discord.ChannelType.voice and max < len(channels.members):
-                    max = len(channels.members)
-                    channel = channels
-
-    try:
-        if player.is_connected == False:
+        if player.invoked != True:
+            channel = ctx.author.voice.channel
             await channel.connect()
-            player.player = ctx.voice_client
-            player.is_connected = True
-        await player.download(url)
+            player.voice = ctx.voice_client
+            player.invoked = True
+        try:
+            await player.download(url)
+        except:
+            print("ERROR: Couldn't find the video.")
     except:
-        print("ERROR: There is no user's voice client. And nobody connected.")
+        print("ERROR: Couldn't invoke play function.")
 
-@client.command()
-async def remove(ctx):
-    await player.remove()
+#@client.command()
+#async def remove(ctx):
+#    await player.remove()
 
 # LEAVE COMMAND
 @client.command()

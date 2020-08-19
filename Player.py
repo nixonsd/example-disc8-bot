@@ -7,7 +7,7 @@ import time
 import wave
 import os
 
-## Class Timer
+## Class Async Timer
 class Timer:
     def __init__(self, timeout, callback):
         self._timeout = timeout
@@ -23,37 +23,33 @@ class Timer:
 
 ## Class Player
 class Player:
-    ### __init__(self)
-    def __init__(self):
-        print("LOG..")
+    ### __init__(self) - checked
+    def __init__(self): 
+        # Check if music folder exists
+        if not os.path.exists('music'):
+            os.mkdir('music')
+        else:
+            for file in os.listdir("music"):
+                if file.endswith(".wav"):
+                    os.remove("music\\{0}".format(file))
 
-        for file in os.listdir("music"):
-            if file.endswith(".wav"):
-                os.remove("music\\{0}".format(file))
-
-        self.current_track = None
-        self.id_current_track = 0
-        self.is_connected = False
+        # INITIALIZE MEMORY
+        self.invoked = False
+        self.id = 0
         self.timer = None
-        self.player = None
-        self.loop = True
+        self.voice = None
         self.mus_list = list(list())
 
-    ### __del__(self)
     def __del__(self):
-        for i in self.mus_list:
-            os.remove(i)
-
+        # CLEAR MEMORY
         self.timer.cancel()
-        self.mus_list.clear()
-        self.current_track = None
-        self.id_current_track = 0
-        self.is_connected = False
-        self.timer = None
-        self.player = None
-        self.loop = True
+        self.invoked = False
+        self.id = 0
+        self.voice = None
 
-    ### Download Youtube Content
+        self.mus_list.clear()
+
+    ### Download Youtube Content - checked
     async def download(self, url):
         opts = {
             'format': 'bestaudio/best',
@@ -69,9 +65,10 @@ class Player:
         with youtube_dl.YoutubeDL(opts) as ydl:
             ydl.download([url])
 
-        await self.play()
+        if self.voice.is_playing() != True:
+            await self.play()
 
-    ### Youtube download's hook
+    ### Youtube download's hook - checked
     def my_hook(self, d):
         if d['status'] == 'finished':
             filename = "{0}.wav".format(d['filename'].split('.')[0])
@@ -79,66 +76,57 @@ class Player:
                 self.mus_list.index(filename)
             except:    
                 self.mus_list.append(filename)
-            print('Done downloading, now converting ...')
+            # print('Done downloading, now converting ...')
 
-    ### 'Play music' function definition
+    ### 'Play music' function definition - checked
     async def play(self):
-        if self.player.is_playing() != False:
-            return
-
-        if len(self.mus_list) < 1:
-            return
-
-        self.current_track = self.mus_list[self.id_current_track]
-
-        with contextlib.closing(wave.open(self.current_track,'r')) as f:
+        with contextlib.closing(wave.open(self.mus_list[self.id],'r')) as f:
             frames = f.getnframes()
             rate = f.getframerate()
             duration = frames / float(rate)
-        print("Duration: {0}".format(duration))
+        # print("Duration: {0}".format(duration))
 
-        source = discord.FFmpegPCMAudio(self.current_track)
-        self.player.play(source)
-
+        source = discord.FFmpegPCMAudio(self.mus_list[self.id])
+        self.voice.play(source)
         self.timer = Timer(duration, self.next)
 
-    ### 'Next track' function
+    ### 'Next track' function - checked
     async def next(self):
         try:
-            self.player.stop()
+            self.voice.stop()
+            self.id = self.id + 1
 
-            self.id_current_track = self.id_current_track + 1
-
-            if len(self.mus_list) <= self.id_current_track:
-                self.id_current_track = 0
-            
-            if self.loop != True:
+            if len(self.mus_list) < 1:
+                print("ERROR: There is nothing to play.")
                 return
 
-            print('LOG: Current track id: {0}. Current track dir: {1}'.format(self.id_current_track, self.mus_list[self.id_current_track]))
+            if len(self.mus_list) <= self.id:
+                self.id = 0
 
+            print('LOG: Current track id: {0}. Current track dir: {1}'.format(self.id, self.mus_list[self.id]))
             await self.play()
+
         except:
             print("ERROR: Cannot call 'next' function.")
             return
 
     ### remove one song from current playlist
-    async def remove(self):
-        try:
-            for i in self.mus_list:
-                print(i)
+    #async def remove(self):
+    #    try:
+    #        for i in self.mus_list:
+    #            print(i)
 
-            temp = self.current_track
-            self.timer.cancel()
-            self.player.stop()
+    #        temp = self.current_track
+    #        self.timer.cancel()
+    #        self.player.stop()
 
-            if len(self.mus_list) > 0:
-                await self.next()
-                time.sleep(1)
-                os.remove(temp)
-                self.mus_list.remove(temp)
-            else:
-                await self.player.disconnect()
-                self.__del__()
-        except:
-            print("ERROR: 'remove' function is not callable.")
+    #        if len(self.mus_list) > 0:
+    #            await self.next()
+    #            time.sleep(1)
+    #            os.remove(temp)
+    #            self.mus_list.remove(temp)
+    #        else:
+    #            await self.player.disconnect()
+    #            self.__del__()
+    #    except:
+    #        print("ERROR: 'remove' function is not callable.")
