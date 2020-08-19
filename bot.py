@@ -3,7 +3,6 @@ from discord.ext import commands
 import Player as pl
 import contextlib
 import asyncio
-import wave
 import os
 
 TOKEN = 'NzA5Njk5NjkyOTEyNzA1NjQ2.XrptWA.ShYcyMLgU51q72LMKzm4kLaJl5k' # TOKEN

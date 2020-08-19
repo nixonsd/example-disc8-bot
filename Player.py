@@ -47,6 +47,7 @@ class Player:
         self.id = 0
         self.voice = None
 
+        ## delete all
         self.mus_list.clear()
 
     ### Download Youtube Content - checked
