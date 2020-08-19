@@ -3,7 +3,6 @@ from discord.ext import commands
 import Player as pl
 import contextlib
 import asyncio
-import time
 import os
 
 TOKEN = 'TOKEN' # TOKEN
