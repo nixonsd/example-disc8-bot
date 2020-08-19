@@ -3,6 +3,7 @@ from discord.ext import commands
 import Player as pl
 import contextlib
 import asyncio
+import time
 import os
 
 TOKEN = 'NzA5Njk5NjkyOTEyNzA1NjQ2.XrptWA.ShYcyMLgU51q72LMKzm4kLaJl5k' # TOKEN
@@ -11,7 +12,7 @@ player = None
 
 ## COMMANDS
 
-# ON_READY EVENT - CHECKED
+# ON_READY EVENT
 @client.event
 async def on_ready():
     global player
@@ -21,7 +22,6 @@ async def on_ready():
 @client.command()
 async def skip(ctx):
     try:
-        player.timer.cancel()
         await player.next()
     except:
         print("ERROR: Couldn't invoke skip function.")
@@ -40,18 +40,25 @@ async def p(ctx, url):
             await player.download(url)
         except:
             print("ERROR: Couldn't find the video.")
+            await leave(ctx)
     except:
         print("ERROR: Couldn't invoke play function.")
 
-#@client.command()
-#async def remove(ctx):
-#    await player.remove()
+@client.command()
+async def remove(ctx):
+    try:
+        await player.remove()
+    except:
+        print("ERROR: Couldn't invoke remove function.")
 
 # LEAVE COMMAND
 @client.command()
 async def leave(ctx):
-    ctx.voice_client.stop()
-    await ctx.voice_client.disconnect()
-    player.__del__()
+    try:
+        ctx.voice_client.stop()
+        await ctx.voice_client.disconnect()
+        player.__del__()
+    except:
+        print("ERROR: Couldn't invoke leave function.")
 
 client.run(TOKEN)
