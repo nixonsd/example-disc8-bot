@@ -4,13 +4,13 @@ Source of the Discord music bot. Early version.
 ## Installing
 1. Install Python libraries:
 	- discord 
-		`pip install discord.py`
+		`$ pip install discord.py`
 	- youtube_dl
-		`pip install youtube_dl`
+		`$ pip install youtube_dl`
 	- ffmpeg
-		`pip install ffmpeg-python`
+		`$ pip install ffmpeg-python`
 	- PyNaCl
-		`pip install PyNaCl`
+		`$ pip install PyNaCl`
 2. Install FFMPEG and add it to the PATH environment variable.
 3. Change TOKEN on yours. `bot.py` 
 
