@@ -1,4 +1,4 @@
-# simp-disc8-bot
+# example-disc8-bot
 Source of the Discord music bot. Early version.
 
 ## Installing
